@@ -151,12 +151,12 @@ Error_Handler();
   */
 void SystemClock_Config(void)
 {
-  LL_FLASH_SetLatency(LL_FLASH_LATENCY_2);
-  while(LL_FLASH_GetLatency()!= LL_FLASH_LATENCY_2)
+  LL_FLASH_SetLatency(LL_FLASH_LATENCY_4);
+  while(LL_FLASH_GetLatency()!= LL_FLASH_LATENCY_4)
   {
   }
   LL_PWR_ConfigSupply(LL_PWR_DIRECT_SMPS_SUPPLY);
-  LL_PWR_SetRegulVoltageScaling(LL_PWR_REGU_VOLTAGE_SCALE1);
+  LL_PWR_SetRegulVoltageScaling(LL_PWR_REGU_VOLTAGE_SCALE0);
   LL_RCC_HSE_EnableBypass();
   LL_RCC_HSE_Enable();
 
@@ -172,17 +172,17 @@ void SystemClock_Config(void)
   {
 
   }
-  LL_RCC_HSI_SetCalibTrimming(32);
+  LL_RCC_HSI_SetCalibTrimming(64);
   LL_RCC_HSI_SetDivider(LL_RCC_HSI_DIV1);
   LL_RCC_PLL_SetSource(LL_RCC_PLLSOURCE_HSE);
   LL_RCC_PLL1P_Enable();
   LL_RCC_PLL1Q_Enable();
-  LL_RCC_PLL1_SetVCOInputRange(LL_RCC_PLLINPUTRANGE_8_16);
+  LL_RCC_PLL1_SetVCOInputRange(LL_RCC_PLLINPUTRANGE_4_8);
   LL_RCC_PLL1_SetVCOOutputRange(LL_RCC_PLLVCORANGE_WIDE);
-  LL_RCC_PLL1_SetM(2);
-  LL_RCC_PLL1_SetN(64);
+  LL_RCC_PLL1_SetM(5);
+  LL_RCC_PLL1_SetN(192);
   LL_RCC_PLL1_SetP(2);
-  LL_RCC_PLL1_SetQ(13);
+  LL_RCC_PLL1_SetQ(15);
   LL_RCC_PLL1_SetR(2);
   LL_RCC_PLL1_Enable();
 
@@ -207,7 +207,7 @@ void SystemClock_Config(void)
   LL_RCC_SetAPB2Prescaler(LL_RCC_APB2_DIV_2);
   LL_RCC_SetAPB3Prescaler(LL_RCC_APB3_DIV_2);
   LL_RCC_SetAPB4Prescaler(LL_RCC_APB4_DIV_2);
-  LL_SetSystemCoreClock(400000000);
+  LL_SetSystemCoreClock(480000000);
 
    /* Update the time base */
   if (HAL_InitTick (TICK_INT_PRIORITY) != HAL_OK)
