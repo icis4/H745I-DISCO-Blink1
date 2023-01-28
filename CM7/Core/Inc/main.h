@@ -38,6 +38,7 @@ extern "C" {
 #include "stm32h7xx_ll_utils.h"
 #include "stm32h7xx_ll_pwr.h"
 #include "stm32h7xx_ll_dma.h"
+#include "stm32h7xx_ll_usart.h"
 #include "stm32h7xx_ll_gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -78,6 +79,10 @@ void Error_Handler(void);
 #define LD2_GPIO_Port GPIOI
 #define OSC_OUT_Pin LL_GPIO_PIN_1
 #define OSC_OUT_GPIO_Port GPIOH
+#define VCP_TX_Pin LL_GPIO_PIN_10
+#define VCP_TX_GPIO_Port GPIOB
+#define VCP_RX_Pin LL_GPIO_PIN_11
+#define VCP_RX_GPIO_Port GPIOB
 #define LD1_Pin LL_GPIO_PIN_2
 #define LD1_GPIO_Port GPIOJ
 

@@ -11,6 +11,8 @@
 #include "main.h"
 #include "cmsis_os.h"
 
+extern void startup(void);
+
 /**
   * @brief  Function implementing the defaultTask thread.
   * @param  argument: Not used
@@ -18,8 +20,11 @@
   */
 void StartDefaultTask(void const *argument)
 {
+	startup();
+
 	uint32_t start_ld2 = osKernelSysTick();
 	uint32_t start_ld1 = osKernelSysTick();
+
 	/* Infinite loop */
 	for (;;) {
 		if (osKernelSysTick() - start_ld1 > 1000) {
