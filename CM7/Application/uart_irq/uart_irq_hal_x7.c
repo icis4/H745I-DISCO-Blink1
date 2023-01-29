@@ -22,11 +22,13 @@
 #include "stream_buffer.h"
 #include "usart.h"
 
-#if defined(STM32H7)
-USART_TypeDef* huart_irq = NULL;
-#else
-UART_HandleTypeDef* huart_irq = NULL;
+#if !(defined(STM32H7xx_HAL_UART_H) || defined(STM32F7xx_HAL_UART_H))
+#error This library required STM32*7xx_HAL_UART_H
 #endif
+
+#include "uart_irq_hal_x7.h"
+
+UART_HandleTypeDef* huart_irq = NULL;
 
 StreamBufferHandle_t uartInStreamHandle = NULL;
 uint8_t uartInStreamBuffer[ 4000 ] __attribute__ ((section (".noinit")));
@@ -47,18 +49,6 @@ void UartIrq__IRQHandler(UART_HandleTypeDef* uartHandle)
 	uint8_t data;
 	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
-#if defined(STM32H7)
-	if (LL_USART_IsActiveFlag_TXE(uartHandle))
-	{
-		if (xStreamBufferReceiveFromISR(uartOutStreamHandle, &data, 1, &xHigherPriorityTaskWoken)) {
-			LL_USART_TransmitData8(uartHandle, d);
-			tx_restart = 0;
-		} else {
-			tx_restart = 1;
-			LL_USART_DisableIT_TXE(uartHandle); // disable TX interrupt if nothing to send
-		}
-	 }
-#else
 	uint32_t isrflags   = READ_REG(uartHandle->Instance->ISR);
 	// USART_ISR_ORE OverRun Error
 	// USART_ISR_PE  Parity Error
@@ -94,7 +84,6 @@ void UartIrq__IRQHandler(UART_HandleTypeDef* uartHandle)
         __HAL_UART_DISABLE_IT(uartHandle, UART_IT_TXE); // disable TX interrupt if nothing to send
       }
     }
-#endif
 }
 
 /**
@@ -106,11 +95,16 @@ void USART1_IRQHandler(void)
   HAL_UART_IRQHandler(huart_irq);
 }
 
-#if defined(STM32H7)
-void UartIrq_Init(USART_TypeDef* uartHandle)
-#else
+/**
+  * @brief This function handles USART1 global interrupt.
+  */
+void USART3_IRQHandler(void)
+{
+  UartIrq__IRQHandler(huart_irq);
+  HAL_UART_IRQHandler(huart_irq);
+}
+
 void UartIrq_Init(UART_HandleTypeDef* uartHandle)
-#endif
 {
 	huart_irq = uartHandle;
 
@@ -120,25 +114,15 @@ void UartIrq_Init(UART_HandleTypeDef* uartHandle)
 	/* definition and creation of uartInStream */
 	uartInStreamHandle = xStreamBufferCreateStatic( sizeof( uartInStreamBuffer ), 1, uartInStreamBuffer, &uartInStreamControlBlock);
 
-#if defined(STM32H7)
-	if (uartHandle == USART1) {
-		//TODO:
-	} else if (uartHandle == USART3) {
-		/* USART3 interrupt Init */
-		NVIC_SetPriority(USART3_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),5, 0));
-		NVIC_EnableIRQ(USART3_IRQn);
-		LL_USART_EnableIT_RXNE_RXFNE(uartHandle);
-	} else {
-		//TODO:
-	}
-#else
 	if (uartHandle->Instance == USART1) {
 		HAL_NVIC_SetPriority(USART1_IRQn, 5, 0);
 		HAL_NVIC_EnableIRQ(USART1_IRQn);
+	} else if (uartHandle->Instance == USART3) {
+		HAL_NVIC_SetPriority(USART3_IRQn, 5, 0);
+		HAL_NVIC_EnableIRQ(USART3_IRQn);
 	}
 
 	__HAL_UART_ENABLE_IT(uartHandle, UART_IT_RXNE);
-#endif
 }
 
 int UartIrq_Transmit(uint8_t* ptr, size_t len)
@@ -149,13 +133,7 @@ int UartIrq_Transmit(uint8_t* ptr, size_t len)
     if (huart_irq != NULL) {
         if (tx_restart) {                                   // If transmit interrupt is disabled, enable it
             tx_restart = 0;
-#if defined(STM32H7)
-            LL_USART_EnableIT_TXE(huart_irq);
-#elif defined(STM32F7)
-            __HAL_UART_ENABLE_IT(huart_irq, UART_IT_TXE);  // enable TX interrupt
-#else
-#error MCU not (yet) supported
-#endif
+            __HAL_UART_ENABLE_IT(huart_irq, UART_IT_TXE);   // enable TX interrupt
         }
     }
     return len;
@@ -179,12 +157,7 @@ int UartIrq_SendChar(uint8_t c)
   if (huart_irq != NULL) {
       if (tx_restart) {                                // If transmit interrupt is disabled, enable it
         tx_restart = 0;
-#if defined(STM32H7)
-        LL_USART_EnableIT_TXE(huart_irq);
-#elif defined(STM32F7)
         __HAL_UART_ENABLE_IT(huart_irq, UART_IT_TXE);  // enable TX interrupt
-#else
-#endif
       }
   }
 
