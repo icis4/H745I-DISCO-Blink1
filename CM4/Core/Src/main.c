@@ -24,7 +24,6 @@
 #include "quadspi.h"
 #include "sai.h"
 #include "sdmmc.h"
-#include "usart.h"
 #include "usb_otg.h"
 #include "gpio.h"
 #include "fmc.h"
@@ -116,7 +115,6 @@ int main(void)
   MX_QUADSPI_Init();
   MX_SAI2_Init();
   MX_SDMMC1_MMC_Init();
-  MX_USART3_UART_Init();
   MX_USB_OTG_FS_PCD_Init();
   /* USER CODE BEGIN 2 */
 
