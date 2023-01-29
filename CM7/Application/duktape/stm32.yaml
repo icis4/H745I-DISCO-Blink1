@@ -1,0 +1,83 @@
+# MIP Configuration
+
+# Provide a custom default fatal error handler to replace the built-in one
+# (which calls abort() without any error message).  The default fatal error
+# handler gets called when (1) a fatal error occurs and application code
+# didn't register a fatal error handler in heap creation or (2) a context-free
+# fatal error happens, concretely e.g. an assertion failure.
+DUK_USE_FATAL_HANDLER: duktype_fatal
+        
+## Move built-in strings and objects to ROM (read-only data section) to reduce
+## RAM usage of Duktape heaps; all heaps will share the same built-in strings
+## and objects, except for the global object which is writable.  The downside
+## is that built-in objects (other than global object) will be read-only.
+#
+## These should be used together.
+#DUK_USE_ROM_STRINGS: true
+#DUK_USE_ROM_OBJECTS: true
+#
+## Provide a writable global object:
+##  - DUK_USE_ROM_GLOBAL_INHERIT: empty RAM global object inherits from ROM
+##    global object, uses very little RAM.
+##  - DUK_USE_ROM_GLOBAL_CLONE: ROM global object is cloned into RAM, more
+##    compliant but uses more RAM.
+##
+## If both are set to 'false', global object will be non-writable which
+## may surprise users.
+#DUK_USE_ROM_GLOBAL_INHERIT: true
+#DUK_USE_ROM_GLOBAL_CLONE: true
+#
+##  When enabled, duk_hstring stores a precomputed array index (or "not an array
+##  index") value related to the string.  This reduces code footprint and
+##  improves performance a littl ebit.
+##
+##  When disabled, duk_hstring has a flag indicating whether it is an array
+##  index or not, but the actual value is computed on-the-fly.
+#DUK_USE_HSTRING_ARRIDX: false
+
+#  NOTE: This mechanism is EXPERIMENTAL and the details may change
+#  between releases.
+#
+#  Provide a hook to check for bytecode execution timeout.  The macro gets
+#  a void ptr userdata argument (the userdata given to duk_heap_create())
+#  and must evaluate to a duk_bool_t.  Duktape calls the macro as:
+#  "if (DUK_USE_EXEC_TIMEOUT_CHECK(udata)) { ... }".
+#
+#  The macro is called occasionally by the Duktape bytecode executor (i.e.
+#  when executing ECMAScript code), typically from a few times per second
+#  to a hundred times per second, but the interval varies a great deal
+#  depending on what kind of code is being executed.
+#
+#  To indicate an execution timeout, the macro must return a non-zero value.
+#  When that happens, Duktape starts to bubble a ``RangeError`` outwards
+#  until control has been returned to the original protected call made by
+#  the application.  Until that happens, the exec timeout macro must always
+#  return non-zero to indicate an execution timeout is still in progress.
+#
+#  This mechanism and its limitations is described in more detail in
+#  doc/sandboxing.rst.
+DUK_USE_EXEC_TIMEOUT_CHECK: duktype_timeout_check  
+
+#  Enable the internal bytecode executor periodic interrupt counter.
+#  The mechanism is used to implement e.g. execution step limit, custom
+#  profiling, and debugger interaction.  Enabling the interrupt counter
+#  has a small impact on execution performance.
+DUK_USE_INTERRUPT_COUNTER: true 
+
+#  Optional macro for getting monotonic time in milliseconds from an arbitrary
+#  starting point (device startup, program startup, script startup, etc).
+#  Fractional time values are allowed (and even recommended).  The time returned
+#  must increase monotonically, and must not jump discontinuously even if system
+#  date/time is reset.  The semantics are similar to POSIX clock_gettime()
+#  CLOCK_MONOTONIC.
+#
+#  Monotonic time is used by Duktape for its internal needs, such as rate
+#  limiting debugger transport peek callbacks.  It is also used to provide
+#  performance.now().  If this option is not provided, Duktape falls back to
+#  using DUK_USE_DATE_GET_NOW() which is usually fine.
+#
+#  If DUK_USE_DATE_GET_NOW() experiences time jumps or doesn't run in realtime
+#  (which may be useful for some time virtualization cases) it's recommended
+#  to provide this config option so that internals which need a reliable
+#  realtime rate have a reliable time basis.
+DUK_USE_GET_MONOTONIC_TIME: HAL_GetTick

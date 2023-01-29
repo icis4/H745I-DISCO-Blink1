@@ -1,0 +1,3 @@
+extern void duktype_fatal(void *udata, const char *msg);
+extern duk_bool_t duktype_timeout_check(void *udata);
+extern uint32_t HAL_GetTick();
