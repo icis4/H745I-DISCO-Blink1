@@ -5,16 +5,11 @@
  *      Author: iic
  */
 #include "main.h"
-#include "ff.h"
 #include <errno.h>
 #include <string.h>
+#include "fatfs.h"
 
 #include "files/file_utils.h"
-
-extern uint8_t retSDRAMDISK;    /* Return value for SDRAMDISK */
-extern char SDRAMDISKPath[4];   /* SDRAMDISK logical drive path */
-extern FATFS SDRAMDISKFatFS;    /* File system object for SDRAMDISK logical drive */
-extern FIL SDRAMDISKFile;       /* File object for SDRAMDISK */
 
 int diskfree(char *path, DWORD *total_kb, DWORD *free_kb) {
 	FATFS *fs;

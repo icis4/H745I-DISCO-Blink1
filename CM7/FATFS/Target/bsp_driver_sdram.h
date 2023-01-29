@@ -54,12 +54,12 @@
 #define SDRAM_TIMEOUT     ((uint32_t)0xFFFF)
 
 /* DMA definitions for SDRAM DMA transfer */
-/*
+
 #define __MDMAx_CLK_ENABLE                 __HAL_RCC_MDMA_CLK_ENABLE
 #define __MDMAx_CLK_DISABLE                __HAL_RCC_MDMA_CLK_DISABLE
 #define SDRAM_MDMAx_CHANNEL               MDMA_Channel0
 #define SDRAM_MDMAx_IRQn                  MDMA_IRQn
-*/
+
 
 /**
   * @brief  FMC SDRAM Mode definition register defines

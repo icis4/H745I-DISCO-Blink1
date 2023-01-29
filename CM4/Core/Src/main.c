@@ -26,7 +26,6 @@
 #include "sdmmc.h"
 #include "usb_otg.h"
 #include "gpio.h"
-#include "fmc.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -110,7 +109,6 @@ int main(void)
   MX_ETH_Init();
   MX_FDCAN1_Init();
   MX_FDCAN2_Init();
-  MX_FMC_Init();
   MX_LTDC_Init();
   MX_QUADSPI_Init();
   MX_SAI2_Init();

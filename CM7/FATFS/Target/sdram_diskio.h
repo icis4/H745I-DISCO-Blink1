@@ -33,6 +33,8 @@ extern const Diskio_drvTypeDef  SDRAMDISK_Driver;
 
 /* USER CODE BEGIN lastSection */
 /* can be used to modify / undefine previous code or add new definitions */
+#define _USE_WRITE 1
+#define _USE_IOCTL 1
 /* USER CODE END lastSection */
 
 #endif /* __SDRAM_DISKIO_H */

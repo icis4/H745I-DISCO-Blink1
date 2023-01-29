@@ -28,12 +28,14 @@ void StartDefaultTask(void const *argument)
 	/* Infinite loop */
 	for (;;) {
 		if (osKernelSysTick() - start_ld1 > 1000) {
+			printf("D1\n");
 			start_ld1 = osKernelSysTick();
-			LL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
+			HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
 		}
 		if (osKernelSysTick() - start_ld2 > 300) {
+			printf("D2\n");
 			start_ld2 = osKernelSysTick();
-			LL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+			HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
 		}
 		osDelay(1);
 	}

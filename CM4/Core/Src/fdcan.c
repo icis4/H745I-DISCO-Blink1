@@ -130,12 +130,21 @@ void HAL_FDCAN_MspInit(FDCAN_HandleTypeDef* fdcanHandle)
 {
 
   GPIO_InitTypeDef GPIO_InitStruct = {0};
+  RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
   if(fdcanHandle->Instance==FDCAN1)
   {
   /* USER CODE BEGIN FDCAN1_MspInit 0 */
 
   /* USER CODE END FDCAN1_MspInit 0 */
-    LL_RCC_SetFDCANClockSource(LL_RCC_FDCAN_CLKSOURCE_PLL1Q);
+
+  /** Initializes the peripherals clock
+  */
+    PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_FDCAN;
+    PeriphClkInitStruct.FdcanClockSelection = RCC_FDCANCLKSOURCE_PLL;
+    if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
+    {
+      Error_Handler();
+    }
 
     /* FDCAN1 clock enable */
     HAL_RCC_FDCAN_CLK_ENABLED++;
@@ -148,7 +157,7 @@ void HAL_FDCAN_MspInit(FDCAN_HandleTypeDef* fdcanHandle)
     PH14     ------> FDCAN1_RX
     PH13     ------> FDCAN1_TX
     */
-    GPIO_InitStruct.Pin = GPIO_PIN_14|GPIO_PIN_13;
+    GPIO_InitStruct.Pin = FDCAN2_RXH14_Pin|FDCAN1_TX_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -165,7 +174,14 @@ void HAL_FDCAN_MspInit(FDCAN_HandleTypeDef* fdcanHandle)
 
   /* USER CODE END FDCAN2_MspInit 0 */
 
-    LL_RCC_SetFDCANClockSource(LL_RCC_FDCAN_CLKSOURCE_PLL1Q);
+  /** Initializes the peripherals clock
+  */
+    PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_FDCAN;
+    PeriphClkInitStruct.FdcanClockSelection = RCC_FDCANCLKSOURCE_PLL;
+    if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
+    {
+      Error_Handler();
+    }
 
     /* FDCAN2 clock enable */
     HAL_RCC_FDCAN_CLK_ENABLED++;
@@ -178,7 +194,7 @@ void HAL_FDCAN_MspInit(FDCAN_HandleTypeDef* fdcanHandle)
     PB5     ------> FDCAN2_RX
     PB13     ------> FDCAN2_TX
     */
-    GPIO_InitStruct.Pin = GPIO_PIN_5|GPIO_PIN_13;
+    GPIO_InitStruct.Pin = FDCAN2_RX_Pin|FDCAN2_TX_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -209,7 +225,7 @@ void HAL_FDCAN_MspDeInit(FDCAN_HandleTypeDef* fdcanHandle)
     PH14     ------> FDCAN1_RX
     PH13     ------> FDCAN1_TX
     */
-    HAL_GPIO_DeInit(GPIOH, GPIO_PIN_14|GPIO_PIN_13);
+    HAL_GPIO_DeInit(GPIOH, FDCAN2_RXH14_Pin|FDCAN1_TX_Pin);
 
   /* USER CODE BEGIN FDCAN1_MspDeInit 1 */
 
@@ -230,7 +246,7 @@ void HAL_FDCAN_MspDeInit(FDCAN_HandleTypeDef* fdcanHandle)
     PB5     ------> FDCAN2_RX
     PB13     ------> FDCAN2_TX
     */
-    HAL_GPIO_DeInit(GPIOB, GPIO_PIN_5|GPIO_PIN_13);
+    HAL_GPIO_DeInit(GPIOB, FDCAN2_RX_Pin|FDCAN2_TX_Pin);
 
   /* USER CODE BEGIN FDCAN2_MspDeInit 1 */
 

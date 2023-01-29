@@ -117,11 +117,20 @@ void HAL_SAI_MspInit(SAI_HandleTypeDef* saiHandle)
 {
 
   GPIO_InitTypeDef GPIO_InitStruct;
+  RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
 /* SAI2 */
     if(saiHandle->Instance==SAI2_Block_A)
     {
     /* SAI2 clock enable */
-    LL_RCC_SetSAIClockSource(LL_RCC_SAI23_CLKSOURCE_CLKP);
+
+  /** Initializes the peripherals clock
+  */
+    PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SAI2;
+    PeriphClkInitStruct.Sai23ClockSelection = RCC_SAI23CLKSOURCE_CLKP;
+    if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
+    {
+      Error_Handler();
+    }
 
     if (SAI2_client == 0)
     {
@@ -146,7 +155,15 @@ void HAL_SAI_MspInit(SAI_HandleTypeDef* saiHandle)
     if(saiHandle->Instance==SAI2_Block_B)
     {
       /* SAI2 clock enable */
-    LL_RCC_SetSAIClockSource(LL_RCC_SAI23_CLKSOURCE_CLKP);
+
+  /** Initializes the peripherals clock
+  */
+    PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SAI2;
+    PeriphClkInitStruct.Sai23ClockSelection = RCC_SAI23CLKSOURCE_CLKP;
+    if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
+    {
+      Error_Handler();
+    }
 
       if (SAI2_client == 0)
       {

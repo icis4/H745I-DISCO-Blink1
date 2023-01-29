@@ -13,30 +13,29 @@ extern char SDRAMDISKPath[4];   /* SDRAMDISK logical drive path */
 extern FATFS SDRAMDISKFatFS;    /* File system object for SDRAMDISK logical drive */
 extern FIL SDRAMDISKFile;       /* File object for SDRAMDISK */
 
-uint8_t retSRAMDISK;    /* Return value for SRAMDISK */
+uint8_t workBuffer[_MAX_SS];
 
 void MX_FATFS_Init(void)
 {
-	uint8_t* workBuffer = malloc(_MAX_SS);
+	/*## FatFS: Link the SDRAMDISK driver ###########################*/
+	retSDRAMDISK = FATFS_LinkDriver(&SDRAMDISK_Driver, SDRAMDISKPath);
 
-  /*## FatFS: Link the SDRAMDISK driver ###########################*/
-  retSDRAMDISK = FATFS_LinkDriver(&SDRAMDISK_Driver, SDRAMDISKPath);
-
-  /* FR_NO_FILESYSTEM Bug workaround*/
-	  FATFS* fs;
-	  fs = malloc(sizeof(FATFS));
-	  f_mount(fs, "", 0); /* Mount default drive */
-	  f_mount(NULL, "", 0); /* Unmount default drive */
-	  free(fs);
+	/* FR_NO_FILESYSTEM Bug workaround*/
+	FATFS *fs;
+	fs = malloc(sizeof(FATFS));
+	f_mount(fs, "", 0); /* Mount default drive */
+	f_mount(NULL, "", 0); /* Unmount default drive */
+	free(fs);
 	/* FR_NO_FILESYSTEM Bug */
 
-	/* additional user code for init */
-	retSRAMDISK = f_mount(&SDRAMDISKFatFS, SDRAMDISKPath, 0);
-	if (retSRAMDISK == FR_OK)
-		retSRAMDISK = f_mkfs(SDRAMDISKPath, FM_ANY, 0, workBuffer,
-				sizeof(workBuffer));
+	if (retSDRAMDISK == FR_OK) {
 
-	free(workBuffer);
+		/* additional user code for init */
+		retSDRAMDISK = f_mount(&SDRAMDISKFatFS, SDRAMDISKPath, 0);
+		if (retSDRAMDISK == FR_OK)
+			retSDRAMDISK = f_mkfs(SDRAMDISKPath, FM_ANY, 0, workBuffer,
+					sizeof(workBuffer));
+	}
 }
 
 /**
